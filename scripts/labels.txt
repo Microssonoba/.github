@@ -1,0 +1,14 @@
+# name|color|description
+# Agent labels must match what the agent orchestrator expects. Change them there first.
+agent:ready|0e8a16|Human-approved: the agent daemon may pick this up
+agent:working|fbca04|Agent is implementing (orchestrator-managed)
+agent:blocked|d93f0b|Agent asked a question; waiting for a human comment
+agent:review|1d76db|Checks and adversarial review running (orchestrator-managed)
+agent:failed|b60205|Agent gave up; see the terminal comment
+agent:large|c5def5|Human override: lift the agent's diff-size cap
+agent:pr|5319e7|Agent opened a PR; humans review and merge
+agent:decompose|c5def5|Spec to split into tickets (planning layer, not yet automated)
+type:feature|a2eeef|New capability
+type:bug|d73a4a|Something is broken
+type:chore|cfd3d7|Maintenance, no behaviour change
+platform-request|5319e7|Needs a change in the platform repo
