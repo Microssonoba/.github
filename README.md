@@ -16,6 +16,12 @@ This public repo holds defaults shared by every repo in the Microssonoba org. Ke
 
 GitHub uses these templates only in repos that have no template of their own. A repo with its own `.github/ISSUE_TEMPLATE/` folder ignores every issue template here, and the same applies to the PR template.
 
+## Branches
+
+`development` is the default branch and where changes land, through feature-branch PRs. `production` is the live version, updated by promotion PRs from `development` merged with a merge commit.
+
+Products call the reusable workflow at `@production`, so CI changes reach them only after promotion. Issue and PR templates are read from the default branch, so they go live on merge into `development`.
+
 ## Labels
 
 The `agent:*` labels must match what the agent orchestrator expects. Change them there first, then update `scripts/labels.txt`.
@@ -31,7 +37,7 @@ Sync labels into a repo after creating it or after editing the list:
 ```yaml
 jobs:
   verify:
-    uses: Microssonoba/.github/.github/workflows/node-ci.yml@main
+    uses: Microssonoba/.github/.github/workflows/node-ci.yml@production
     with:
       install: npm ci
       verify: npm test
