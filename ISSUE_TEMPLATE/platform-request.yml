@@ -1,0 +1,43 @@
+name: Platform request
+description: A product needs a change in a shared platform service or library
+labels: ["platform-request"]
+body:
+  - type: input
+    id: origin
+    attributes:
+      label: Originating issue
+      description: "e.g. Microssonoba/route-helper#123"
+    validations:
+      required: true
+  - type: dropdown
+    id: module
+    attributes:
+      label: Platform module
+      options:
+        - auth
+        - billing
+        - dashboards
+        - notifications
+        - ui
+        - types
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: need
+    attributes:
+      label: What the product needs
+      description: Describe the capability, not the implementation
+    validations:
+      required: true
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Current workaround
+      description: '"None" is an answer'
+  - type: checkboxes
+    id: contract
+    attributes:
+      label: Contract impact
+      options:
+        - label: This likely changes a public contract and needs an ADR before work starts
