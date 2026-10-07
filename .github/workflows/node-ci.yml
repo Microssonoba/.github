@@ -1,0 +1,38 @@
+# Reusable CI for Node repos in the org.
+# Call it from a repo's workflow:
+#   jobs:
+#     verify:
+#       uses: Microssonoba/.github/.github/workflows/node-ci.yml@production
+#       with:
+#         verify: npm test
+name: node-ci
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        type: string
+        default: "22"
+      install:
+        type: string
+        default: npm ci
+      verify:
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: npm
+      - name: Install
+        run: ${{ inputs.install }}
+      - name: Verify
+        run: ${{ inputs.verify }}
