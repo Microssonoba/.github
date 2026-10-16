@@ -20,8 +20,9 @@ on:
         type: string
         required: true
 
-permissions:
-  contents: read
+# No permissions block: the job inherits exactly what the caller grants at its job level, usually
+# contents: read, plus packages: read to install @microssonoba packages. Requesting more here than a
+# caller grants would make that caller fail at startup.
 
 jobs:
   verify:
@@ -37,5 +38,9 @@ jobs:
           cache: npm
       - name: Install
         run: ${{ inputs.install }}
+        env:
+          # Read access to GitHub Packages; repos map @microssonoba to it in .npmrc with
+          # //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}.
+          NODE_AUTH_TOKEN: ${{ github.token }}
       - name: Verify
         run: ${{ inputs.verify }}
