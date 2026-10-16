@@ -20,10 +20,9 @@ on:
         type: string
         required: true
 
-# Callers grant these at the job level (contents: read, plus packages: read to install @microssonoba packages).
-permissions:
-  contents: read
-  packages: read
+# No permissions block: the job inherits exactly what the caller grants at its job level, usually
+# contents: read, plus packages: read to install @microssonoba packages. Requesting more here than a
+# caller grants would make that caller fail at startup.
 
 jobs:
   verify:
