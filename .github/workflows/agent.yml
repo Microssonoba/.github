@@ -1,0 +1,41 @@
+# The agent workflow: one GitHub Actions job per agent event, on our self-hosted runners.
+# Design: ADR 0001 in Microssonoba/agent-orchestrator. Each product's .github/workflows/agent.yml carries the
+# triggers and calls this; everything else is here, once.
+#
+# The filter below runs on GitHub before a runner is used. The orchestrator checks the same rules again
+# (agent-orch handle), so a filter mistake can waste a job but can't start unauthorised work.
+name: agent
+
+on:
+  workflow_call:
+    inputs:
+      operators:
+        description: GitHub logins allowed to start agent work, as a JSON list
+        type: string
+        default: '["portugueseTorch", "TJSilveira"]'
+
+jobs:
+  agent:
+    if: >-
+      (github.event_name == 'issues' && github.event.action == 'labeled'
+        && github.event.label.name == 'agent:ready'
+        && contains(fromJSON(inputs.operators), github.event.sender.login))
+      || (github.event_name == 'issue_comment' && github.event.action == 'created'
+        && !github.event.issue.pull_request
+        && github.event.sender.type != 'Bot'
+        && contains(github.event.issue.labels.*.name, 'agent:blocked'))
+      || (github.event_name == 'repository_dispatch' && github.event.action == 'agent-issue')
+      || github.event_name == 'schedule'
+      || (github.event_name == 'workflow_dispatch' && contains(fromJSON(inputs.operators), github.actor))
+    runs-on: [self-hosted, agent]
+    timeout-minutes: 360
+    # The orchestrator acts as the GitHub App with its own key on the server; this job's token isn't used.
+    permissions: {}
+    # One job per issue at a time. GitHub keeps only the newest pending job per group, which is fine: the
+    # orchestrator reads the issue's full state on every run, not just the event.
+    concurrency:
+      group: agent-${{ github.repository }}-${{ github.event.issue.number || github.event.client_payload.issue || github.event.inputs.issue || 'sweep' }}
+      cancel-in-progress: false
+    steps:
+      - name: Handle the event
+        run: '"$HOME/agent-orchestrator/bin/agent-orch" handle'
