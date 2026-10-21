@@ -1,0 +1,4 @@
+# Labels of our self-hosted runners (ADR 0001 in Microssonoba/agent-orchestrator).
+self-hosted-runner:
+  labels:
+    - agent
